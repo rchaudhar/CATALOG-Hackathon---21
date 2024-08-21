@@ -1,0 +1,129 @@
+from datetime import datetime, timedelta
+
+# A dictionary to store child records with unique ID as key
+child_records = {}
+
+# Function to add a new child's record
+def add_child():
+    child_id = input("Enter child's ID: ")
+    name = input("Enter child's name: ")
+    dob = input("Enter child's date of birth (YYYY-MM-DD): ")
+    parent_name = input("Enter parent's name: ")
+    contact_info = input("Enter contact information: ")
+    child_records[child_id] = {
+        'name': name,
+        'dob': dob,
+        'parent_name': parent_name,
+        'contact_info': contact_info,
+        'vaccination_schedule': [],
+        'reminders': []
+    }
+    print(f"Record added for {name}.\n")
+
+# Function to add a vaccination appointment
+def add_vaccination(child_id):
+    if child_id not in child_records:
+        print("Child not found.")
+        return
+    
+    vaccine_name = input("Enter vaccine name: ")
+    date_str = input("Enter vaccination date (YYYY-MM-DD): ")
+    
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        print("Invalid date format. Please use YYYY-MM-DD.")
+        return
+    
+    child_records[child_id]['vaccination_schedule'].append({
+        'vaccine_name': vaccine_name,
+        'date': date
+    })
+    
+    child_records[child_id]['reminders'].append({
+        'vaccine_name': vaccine_name,
+        'reminder_date': date - timedelta(days=3)  # Reminder 3 days before
+    })
+    
+    print(f"Vaccination for {vaccine_name} scheduled on {date_str}.\n")
+
+# Function to view child's record
+def view_child_record(child_id):
+    if child_id not in child_records:
+        print("Child not found.")
+        return
+    
+    child = child_records[child_id]
+    print(f"Child Name: {child['name']}")
+    print(f"Date of Birth: {child['dob']}")
+    print(f"Parent Name: {child['parent_name']}")
+    print(f"Contact Info: {child['contact_info']}")
+    print("Vaccination Schedule:")
+    for vaccine in child['vaccination_schedule']:
+        print(f"- {vaccine['vaccine_name']} on {vaccine['date']}")
+    print("Reminders:")
+    for reminder in child['reminders']:
+        print(f"- Reminder: {reminder['vaccine_name']} on {reminder['reminder_date']}")
+    print()
+
+# Function to send reminders (simulated as console output)
+def send_reminders():
+    today = datetime.now().date()
+    print("Sending reminders...")
+    for child_id, child in child_records.items():
+        for reminder in child['reminders']:
+            if reminder['reminder_date'] == today:
+                print(f"Reminder for {child['name']}: "
+                      f"{reminder['vaccine_name']} scheduled on {reminder['reminder_date']}")
+    print("Reminders sent.\n")
+
+# Function to book an appointment
+def book_appointment(child_id):
+    if child_id not in child_records:
+        print("Child not found.")
+        return
+    
+    date_str = input("Enter appointment date (YYYY-MM-DD): ")
+    
+    try:
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        print("Invalid date format. Please use YYYY-MM-DD.")
+        return
+    
+    print(f"Appointment booked for {child_records[child_id]['name']} on {date_str}.\n")
+
+# Main function to run the application
+def main():
+    while True:
+        print("=== Vaccination Scheduler ===")
+        print("1. Add Child Record")
+        print("2. Add Vaccination Appointment")
+        print("3. View Child Record")
+        print("4. Send Reminders")
+        print("5. Book Appointment")
+        print("6. Exit")
+        
+        choice = input("Enter your choice: ")
+        
+        if choice == '1':
+            add_child()
+        elif choice == '2':
+            child_id = input("Enter child's ID: ")
+            add_vaccination(child_id)
+        elif choice == '3':
+            child_id = input("Enter child's ID: ")
+            view_child_record(child_id)
+        elif choice == '4':
+            send_reminders()
+        elif choice == '5':
+            child_id = input("Enter child's ID: ")
+            book_appointment(child_id)
+        elif choice == '6':
+            print("Exiting the application.")
+            break
+        else:
+            print("Invalid choice. Please try again.")
+
+if __name__ == "__main__":
+    main()
